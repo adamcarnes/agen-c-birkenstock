@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>They think they know us. They've only worn us.</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --sand: #E8E0D0;
+    --cork: #C4A882;
+    --deep: #1C1814;
+    --accent: #8B3A2A;
+    --light: #F4F0E8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--deep);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 52px 40px 64px;
+    overflow-x: hidden;
+  }
+
+  .headline {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(17px, 2vw, 24px);
+    color: var(--light);
+    letter-spacing: 0.01em;
+    margin-bottom: 7px;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  .subhead {
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cork);
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .diagram {
+    width: 100%;
+    max-width: 1080px;
+    display: grid;
+    grid-template-columns: 1fr 220px 1fr;
+    align-items: center;
+    position: relative;
+    gap: 0 12px;
+  }
+
+  .connector-svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ── FOOTBED CENTER ── */
+  .footbed-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    position: relative;
+  }
+
+  .footbed-svg {
+    animation: glow 4s ease-in-out infinite;
+  }
+
+  @keyframes glow {
+    0%, 100% { filter: drop-shadow(0 0 20px rgba(139,58,42,0.4)); }
+    50%       { filter: drop-shadow(0 0 44px rgba(139,58,42,0.7)); }
+  }
+
+  /* ── SPACE COLUMNS ── */
+  .spaces-col {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    z-index: 5;
+  }
+
+  .spaces-col.left  { align-items: flex-end;  padding-right: 16px; }
+  .spaces-col.right { align-items: flex-start; padding-left:  16px; }
+
+  .space-node {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .space-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--cork);
+    flex-shrink: 0;
+  }
+
+  .space-card {
+    background: rgba(196,168,130,0.07);
+    border: 1px solid rgba(196,168,130,0.17);
+    border-radius: 4px;
+    padding: 10px 13px;
+    min-width: 168px;
+    max-width: 208px;
+    cursor: default;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .space-card:hover {
+    background: rgba(196,168,130,0.13);
+    border-color: rgba(196,168,130,0.36);
+  }
+
+  .space-card:hover .tribe-list {
+    max-height: 200px;
+    opacity: 1;
+  }
+
+  .space-name {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cork);
+    margin-bottom: 4px;
+  }
+
+  .space-portal {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 11px;
+    color: rgba(244,240,232,0.58);
+    line-height: 1.45;
+  }
+
+  .tribe-list {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .tribe-pill {
+    font-size: 7.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+
+  .tribe-pill.existing {
+    background: rgba(139,58,42,0.28);
+    color: #E8A090;
+    border: 1px solid rgba(139,58,42,0.42);
+  }
+
+  .tribe-pill.convert {
+    background: rgba(196,168,130,0.09);
+    color: rgba(196,168,130,0.72);
+    border: 1px solid rgba(196,168,130,0.2);
+  }
+
+  .legend {
+    margin-top: 44px;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 8.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(196,168,130,0.48);
+  }
+
+  .legend-swatch { width: 20px; height: 11px; border-radius: 2px; }
+
+  .hint {
+    margin-top: 11px;
+    font-size: 8px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(196,168,130,0.22);
+  }
+
+  .footer-rule {
+    margin-top: 44px;
+    width: 60px; height: 1px;
+    background: rgba(196,168,130,0.18);
+  }
+
+  .footer-text {
+    margin-top: 13px;
+    font-size: 7.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(196,168,130,0.22);
+  }
+</style>
+</head>
+<body>
+
+<div class="headline">They think they know us. They've only worn us.</div>
+<div class="subhead">Birkenstock — The Experiential Gap</div>
+
+<div class="diagram" id="layout">
+
+  <svg class="connector-svg" id="connectorSvg" viewBox="0 0 1080 640" preserveAspectRatio="xMidYMid meet"></svg>
+
+  <!-- LEFT -->
+  <div class="spaces-col left" id="leftCol">
+
+    <div class="space-node" data-side="left">
+      <div class="space-card">
+        <div class="space-name">Festival</div>
+        <div class="space-portal">Creative community, design heritage, maker culture</div>
+        <div class="tribe-list">
+          <span class="tribe-pill existing">Classics</span>
+          <span class="tribe-pill existing">1774</span>
+          <span class="tribe-pill convert">Festival-goer</span>
+          <span class="tribe-pill convert">Culture seeker</span>
+        </div>
+      </div>
+      <div class="space-dot"></div>
+    </div>
+
+    <div class="space-node" data-side="left">
+      <div class="space-card">
+        <div class="space-name">Sport / Wellness</div>
+        <div class="space-portal">Natural movement, biomechanics, body-mind philosophy</div>
+        <div class="tribe-list">
+          <span class="tribe-pill existing">Active</span>
+          <span class="tribe-pill existing">Care Essentials</span>
+          <span class="tribe-pill convert">Marathon runner</span>
+          <span class="tribe-pill convert">Wellness seeker</span>
+        </div>
+      </div>
+      <div class="space-dot"></div>
+    </div>
+
+    <div class="space-node" data-side="left">
+      <div class="space-card">
+        <div class="space-name">College / Campus</div>
+        <div class="space-portal">Sustainability, repair culture, anti-disposability</div>
+        <div class="tribe-list">
+          <span class="tribe-pill existing">Classics loyalists</span>
+          <span class="tribe-pill convert">Gen Z skeptic</span>
+          <span class="tribe-pill convert">Eco-conscious student</span>
+        </div>
+      </div>
+      <div class="space-dot"></div>
+    </div>
+
+  </div>
+
+  <!-- CENTER: Footbed -->
+  <div class="footbed-wrap" id="core">
+    <svg class="footbed-svg" viewBox="0 0 200 310" width="200" height="310" xmlns="http://www.w3.org/2000/svg">
+
+      <!-- ── FOOTBED OUTLINE ──
+           Top-down anatomical view, right foot.
+           Toes at top. Heel at bottom.
+           Lateral (outer) edge = right side, straighter.
+           Medial (arch) edge = left side, pinches inward.
+      -->
+      <path
+        d="
+          M 100 16
+          C 88 8, 60 10, 48 28
+          C 36 46, 38 72, 40 96
+          C 41 112, 36 130, 32 150
+          C 27 172, 28 196, 38 216
+          C 48 236, 68 250, 92 255
+          C 116 260, 142 252, 158 236
+          C 172 220, 172 198, 168 178
+          C 164 158, 158 138, 158 116
+          C 158 94, 162 70, 158 48
+          C 154 26, 136 8, 118 12
+          C 110 14, 104 16, 100 16
+          Z
+        "
+        fill="#8B3A2A"
+        stroke="rgba(196,168,130,0.3)"
+        stroke-width="1.5"
+      />
+
+      <!-- Subtle internal cork contour lines -->
+      <path d="M 78 34 C 70 54, 66 78, 64 102 C 61 126, 58 150, 58 172 C 57 190, 60 210, 66 226"
+        fill="none" stroke="rgba(244,240,232,0.06)" stroke-width="1.2"/>
+      <path d="M 122 32 C 128 52, 130 76, 130 100 C 130 124, 126 148, 124 170 C 122 190, 122 210, 120 226"
+        fill="none" stroke="rgba(244,240,232,0.06)" stroke-width="1.2"/>
+
+      <!-- Metatarsal bar (subtle arc across ball of foot) -->
+      <path d="M 52 102 Q 100 90, 148 106"
+        fill="none" stroke="rgba(244,240,232,0.05)" stroke-width="1.5"/>
+
+      <!-- Arch indentation shadow (medial side) -->
+      <path d="M 35 148 C 40 158, 42 168, 38 178"
+        fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="3" stroke-linecap="round"/>
+
+      <!-- Heel cup (subtle oval) -->
+      <ellipse cx="100" cy="234" rx="36" ry="14"
+        fill="none" stroke="rgba(244,240,232,0.06)" stroke-width="1"/>
+
+      <!-- ── LABEL: THE GAP ── -->
+      <text x="100" y="90"
+        text-anchor="middle"
+        font-family="'DM Sans', sans-serif"
+        font-size="7" font-weight="500"
+        letter-spacing="2.5"
+        fill="rgba(196,168,130,0.45)">THE GAP</text>
+
+      <!-- ── QUOTE LINE 1 ── -->
+      <text x="100" y="126"
+        text-anchor="middle"
+        font-family="'Playfair Display', serif"
+        font-style="italic"
+        font-size="12"
+        fill="rgba(244,240,232,0.92)">They think</text>
+
+      <!-- ── QUOTE LINE 2 ── -->
+      <text x="100" y="143"
+        text-anchor="middle"
+        font-family="'Playfair Display', serif"
+        font-style="italic"
+        font-size="12"
+        fill="rgba(244,240,232,0.92)">they know us.</text>
+
+      <!-- Hairline divider -->
+      <line x1="68" y1="154" x2="132" y2="154"
+        stroke="rgba(196,168,130,0.22)" stroke-width="0.5"/>
+
+      <!-- ── QUOTE LINE 3 ── -->
+      <text x="100" y="170"
+        text-anchor="middle"
+        font-family="'Playfair Display', serif"
+        font-style="italic"
+        font-size="12"
+        fill="rgba(244,240,232,0.7)">They've only</text>
+
+      <!-- ── QUOTE LINE 4 ── -->
+      <text x="100" y="187"
+        text-anchor="middle"
+        font-family="'Playfair Display', serif"
+        font-style="italic"
+        font-size="12"
+        fill="rgba(244,240,232,0.7)">worn us.</text>
+
+      <!-- ── BOTTOM TAG ── -->
+      <text x="100" y="228"
+        text-anchor="middle"
+        font-family="'DM Sans', sans-serif"
+        font-size="6" font-weight="500"
+        letter-spacing="1.6"
+        fill="rgba(196,168,130,0.38)">EXPERIENTIAL CLOSES THIS</text>
+
+    </svg>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="spaces-col right" id="rightCol">
+
+    <div class="space-node" data-side="right">
+      <div class="space-dot"></div>
+      <div class="space-card">
+        <div class="space-name">Culture</div>
+        <div class="space-portal">Function as philosophy — where tribes intersect visibly</div>
+        <div class="tribe-list">
+          <span class="tribe-pill existing">Professionals</span>
+          <span class="tribe-pill existing">1774</span>
+          <span class="tribe-pill convert">Chef / artist</span>
+          <span class="tribe-pill convert">Architect / designer</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-node" data-side="right">
+      <div class="space-dot"></div>
+      <div class="space-card">
+        <div class="space-name">Retail</div>
+        <div class="space-portal">Craft, customization, personal fit — feel the footbed</div>
+        <div class="tribe-list">
+          <span class="tribe-pill existing">All tribes</span>
+          <span class="tribe-pill convert">First-time wearer</span>
+          <span class="tribe-pill convert">Gift buyer / curious browser</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-node" data-side="right">
+      <div class="space-dot"></div>
+      <div class="space-card">
+        <div class="space-name">Papillio / Fashion</div>
+        <div class="space-portal">Femininity + function — new heel, same feel</div>
+        <div class="tribe-list">
+          <span class="tribe-pill existing">Papillio wearers</span>
+          <span class="tribe-pill convert">Fashion-forward women</span>
+          <span class="tribe-pill convert">Former skeptic</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-item">
+    <div class="legend-swatch" style="background:rgba(139,58,42,0.28);border:1px solid rgba(139,58,42,0.42)"></div>
+    Existing tribe member
+  </div>
+  <div class="legend-item">
+    <div class="legend-swatch" style="background:rgba(196,168,130,0.09);border:1px solid rgba(196,168,130,0.2)"></div>
+    Potential convert
+  </div>
+</div>
+
+<div class="hint">Hover each space to reveal tribe breakdown</div>
+
+<div class="footer-rule"></div>
+<div class="footer-text">The footbed is always the portal — the world it opens shifts by context</div>
+
+<script>
+  function drawLines() {
+    const svg = document.getElementById('connectorSvg');
+    const layoutEl = document.getElementById('layout');
+    const coreEl = document.getElementById('core');
+    const layoutRect = layoutEl.getBoundingClientRect();
+    const coreRect = coreEl.getBoundingClientRect();
+
+    const cx = (coreRect.left + coreRect.width / 2 - layoutRect.left);
+    const cy = (coreRect.top + coreRect.height / 2 - layoutRect.top);
+    const scaleX = 1080 / layoutRect.width;
+    const scaleY = 640 / layoutRect.height;
+
+    svg.innerHTML = '';
+
+    layoutEl.querySelectorAll('.space-dot').forEach(dot => {
+      const r = dot.getBoundingClientRect();
+      const dx = (r.left + r.width / 2 - layoutRect.left) * scaleX;
+      const dy = (r.top + r.height / 2 - layoutRect.top) * scaleY;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', cx * scaleX);
+      line.setAttribute('y1', cy * scaleY);
+      line.setAttribute('x2', dx);
+      line.setAttribute('y2', dy);
+      line.setAttribute('stroke', 'rgba(196,168,130,0.13)');
+      line.setAttribute('stroke-width', '1');
+      line.setAttribute('stroke-dasharray', '3 8');
+      svg.appendChild(line);
+    });
+  }
+
+  window.addEventListener('load', () => setTimeout(drawLines, 100));
+  window.addEventListener('resize', drawLines);
+</script>
+
+</body>
+</html>
